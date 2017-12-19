@@ -21,6 +21,11 @@ This allows Docker containers to start up a lot faster (and put a lot less
 strain on your battery!). Using Docker helps keep your environments consistent
 across development and production.
 
+For more info about how containers differ from virtual machines, take a look at
+[What is a Container](https://www.docker.com/what-container) in the Docker
+documentation.
+
+
 ### Installing docker
 
 https://docs.docker.com/compose/install/
