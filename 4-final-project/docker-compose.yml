@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+  postgres:
+    image: mdillon/postgis:9.6-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      PGDATA: '/var/lib/postgresql/data/pgdata'
+      POSTGRES_DB: $POSTGRES_DB
+      POSTGRES_USER: $POSTGRES_USER
+      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+    volumes: 
+      - django-data:/var/lib/postgresql/data/pgdata
+
+  django:
+    image: docker-django
+    build: .
+    working_dir: /app
+    command: python manage.py runserver 0.0.0.0:8000
+    environment:
+      DATABASE_URL: $DATABASE_URL
+      SECRET_KEY: $SECRET_KEY
+      DEBUG: $DEBUG
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+
+volumes:
+  django-data:
