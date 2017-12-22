@@ -4,14 +4,26 @@ This is the repo for the December 2017 MemPy talk on using Docker Compose for Dj
 
 This example is based on the [Docker Compose Django Quickstart](https://docs.docker.com/compose/django/), but with some changes. The changes are primarily to fix permissions issues caused by the root user running inside of the container.
 
-## Overview
-  * What is Docker?
-  * What is Docker Compose?
-  * Setup
-  * Creating the Django project Dockerfile
-  * Enabling docker-compose
-    * Django app, postgres app, redis
+__NOTE__: I created a
+[blog post](https://egoddard.github.io/posts/local-django-development-with-docker-and-docker-compose/)
+with the content below plus additional explanations to cover what I talked
+about at the meetup. If you weren't able to attend in person, the blog post
+may be helpful as it provides some additional context.
 
+- [Django Development with Docker and Docker Compose](#django-development-with-docker-and-docker-compose)
+    - [What is Docker](#what-is-docker)
+        - [Installing docker](#installing-docker)
+    - [Some basic examples](#some-basic-examples)
+        - [__Example 1__: Docker processes](#example-1-docker-processes)
+        - [__example 2__: SciPy up and running with the SciPy stack with one command](#example-2-scipy-up-and-running-with-the-scipy-stack-with-one-command)
+    - [Dockerizing a Django app](#dockerizing-a-django-app)
+        - [Basic Dockerfile](#basic-dockerfile)
+        - [Problems with the basic config](#problems-with-the-basic-config)
+        - [Dockerfile permissions fix](#dockerfile-permissions-fix)
+        - [Docker Compose Basics](#docker-compose-basics)
+        - [Final Project](#final-project)
+            - [Direnv](#direnv)
+        - [Additional Resources](#additional-resources)
 ## What is Docker
 
 Docker is a tool for running isolated processes or code. It is kind of like a
@@ -163,6 +175,8 @@ configured, running `docker-compuse up` starts up both our django (serving code
 from the current directory) and postgres database containers defined in the
 compose file:
 
+`$ docker-compose build`
+
 `$ docker-compose up`
 
 Arbitrary commands can be run in the container with `docker-compose run <service> <cmd>`:
@@ -186,19 +200,20 @@ handled by Docker. Unlike the other examples so far, this example has a
 complete Django project that we'll walk through to see how it is configured for
 Docker.
 
-#### [Direnv](https://direnv.net/)
+#### Direnv
 
 In the last example's `docker-compose.yml`, you may have noticed we had
 passwords and database urls, etc. in our compose file, which isn't good because
 we want to commit that to version control. A better option is to load those
-values from the environment. We can use `direnv` to automatically load/unload
-environment variables when we enter directories, which we can reference in our `docker-compose.yml`
+values from the environment. We can use [Direnv](https://direnv.net/) to
+automatically load/unload environment variables when we enter directories, which
+we can reference in our `docker-compose.yml`
 
 To make sure your environment variables are never committed to version control,
 create a global `gitignore` file that contains `.envrc`, the file `direnv`
 looks for in a directory:
 
-```
+```bash
 $ touch ~/.gitignore_global
 $ git config --global core.excludesfile ~/.gitignore_global
 $ echo ".envrc" >> ~/.gitignore_global
@@ -209,7 +224,7 @@ you need to run `direnv allow` before the file will be reloaded.
 
 Your `.envrc` should look something like this:
 
-```
+```bash
 export POSTGRES_DB=osm
 export POSTGRES_USER=osm
 export POSTGRES_PASSWORD=mysecretpassword
@@ -225,6 +240,8 @@ With the variables in the container, we can update
 [settings.py](./4-final-project/gis/settings.py) to use
 [djang-environ](https://github.com/joke2k/django-environ) to configure our 
 database, secret key, and debug settings from environment varibales.
+
+Run `$ docker-compose build` to build the containers.
 
 Run `$ docker-compose up` to start the containers and run the development
 server.
