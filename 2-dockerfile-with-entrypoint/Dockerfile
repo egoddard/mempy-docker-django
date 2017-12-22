@@ -1,6 +1,7 @@
 FROM python:3
 ENV PYTHONBUFFERED 1
 ENV GOSU_VERSION 1.10
+ENV USER_ID 1000
 
 RUN apt-get update \
     && apt-get install -y curl \
